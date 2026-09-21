@@ -1,0 +1,194 @@
+{
+  "_version": "1.89.0",
+  "sap.app": {
+    "id": "zsp.itsm.zspfcustmaster",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.32.0",
+      "toolsId": "4909413c-25c5-4031-be3d-dc762047ba7f"
+    },
+    "dataSources": {
+      "annotation": {
+        "type": "ODataAnnotation",
+        "uri": "annotations/annotation.xml",
+        "settings": {
+          "localUri": "annotations/annotation.xml"
+        }
+      },
+      "mainService": {
+        "uri": "/sap/opu/odata4/sap/zsp_itsm_p_custmaster_ui_v4/srvd/sap/zsp_itsm_p_custmaster_ui/0001/",
+        "type": "OData",
+        "settings": {
+          "annotations": [
+            "annotation"
+          ],
+          "localUri": "localService/mainService/metadata.xml",
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "ZSPF_CUSTMASTER-display": {
+          "semanticObject": "ZSPF_CUSTMASTER",
+          "action": "display",
+          "title": "{{ZSPF_CUSTMASTER-display.flpTitle}}",
+          "subTitle": "{{ZSPF_CUSTMASTER-display.flpSubtitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "dependencies": {
+      "minUI5Version": "1.152.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {},
+        "sap.ui.richtexteditor": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "zsp.itsm.zspfcustmaster.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "synchronizationMode": "None",
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "MainList",
+          "target": "MainList"
+        },
+        {
+          "pattern": "Main({key}):?query:",
+          "name": "MainObjectPage",
+          "target": "MainObjectPage"
+        }
+      ],
+      "targets": {
+        "MainList": {
+          "type": "Component",
+          "id": "MainList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/Main",
+              "variantManagement": "Page",
+              "initialLoad": "Enabled",
+              "navigation": {
+                "Main": {
+                  "detail": {
+                    "route": "MainObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "GridTable"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "MainObjectPage": {
+          "type": "Component",
+          "id": "MainObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Main",
+              "content": {
+                "body": {
+                  "sections": {
+                    "CustomRTE": {
+                      "template": "zsp.itsm.zspfcustmaster.ext.fragment.CustomRTE",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "_Attach"
+                      },
+                      "title": "상세내용"
+                    }
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "_Manager/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "selectionMode": "Single"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
+  "sap.fe": {
+    "app": {
+      "enableLazyLoading": true
+    }
+  }
+}
