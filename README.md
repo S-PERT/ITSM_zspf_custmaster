@@ -41,7 +41,7 @@
 1. Active NodeJS LTS (Long Term Support) version and associated supported NPM version.  (See https://nodejs.org)
 
 
-### Custom Extensions (Rich Text Editor)
+### Custom Extensions (Rich Text Editor & Selection Fields)
 
 Fiori Elements 표준 List Report V4 템플릿에 Page Map을 활용하여 서식 있는 텍스트(Rich Text Editor) 확장을 적용한 내역입니다.
 
@@ -118,4 +118,20 @@ sap.ui.define([
         }
     };
 });
+```
+
+#### 4) annotation.xml — 솔루션 구분(SolutionFlag) 내비게이션 필터 추가
+OData V4 환경에서 Header 엔티티 리스트를 조회할 때, 자식 엔티티의 필드(솔루션 구분)로 필터링하기 위해 `@UI.SelectionFields` 어노테이션을 로컬에 재정의했습니다. 
+기존 백엔드 필터 속성들(`Custno`, `Manager`)을 그대로 유지하면서, 새롭게 추가된 내비게이션 경로인 `_Solution/SolutionFlag`를 명시하여 조회 시 1:N 관계에 의한 헤더 데이터 중복 문제를 방지합니다.
+
+```xml
+<Annotations Target="SAP__self.MainType">
+    <Annotation Term="UI.SelectionFields">
+        <Collection>
+            <PropertyPath>Custno</PropertyPath>
+            <PropertyPath>Manager</PropertyPath>
+            <PropertyPath>_Solution/SolutionFlag</PropertyPath>
+        </Collection>
+    </Annotation>
+</Annotations>
 ```

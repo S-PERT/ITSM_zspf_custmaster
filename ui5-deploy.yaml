@@ -16,6 +16,10 @@ builder:
         ignoreCertErrors: true
         target:
           url: https://saphana2.s-pert.com:44360
+          client: '100'
+        credentials:
+          username: env:UI5_DEPLOY_USERNAME
+          password: env:UI5_DEPLOY_PASSWORD
         app:
           name: ZSPF_CUSTMASTER
           description: 거래처 마스터
