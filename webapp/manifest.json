@@ -47,6 +47,16 @@
             "additionalParameters": "allowed"
           }
         }
+      },
+      "outbounds": {
+        "toRequest": {
+          "semanticObject": "ZSPF_REQUEST",
+          "action": "display",
+          "parameters": {
+            "Custno": {}
+          },
+          "additionalParameters": "ignored"
+        }
       }
     }
   },
@@ -67,6 +77,18 @@
     }
   },
   "sap.ui5": {
+    "extends": {
+      "extensions": {
+        "sap.ui.controllerExtensions": {
+          "sap.fe.templates.ObjectPage.ObjectPageController": {
+            "controllerName": "zsp.itsm.zspfcustmaster.ext.controller.NavContextExt"
+          },
+          "sap.fe.templates.ListReport.ListReportController": {
+            "controllerName": "zsp.itsm.zspfcustmaster.ext.controller.NavContextExt"
+          }
+        }
+      }
+    },
     "flexEnabled": false,
     "dependencies": {
       "minUI5Version": "1.152.0",

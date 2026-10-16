@@ -135,3 +135,65 @@ OData V4 환경에서 Header 엔티티 리스트를 조회할 때, 자식 엔티
     </Annotation>
 </Annotations>
 ```
+
+#### 5) NavContextExt.controller.js — Cross-App Navigation 파라미터 정제 (화이트리스트 제어)
+거래처 마스터에서 고객업체 요청관리(`ZSPF_REQUEST`) 등 타 앱으로 Intent 기반 내비게이션(Cross-App Navigation)을 수행할 때, 현재 화면의 불필요한 필터 조건이나 파라미터(감사 필드 등)가 타겟 앱으로 전파되어 검색을 왜곡하는 현상을 방지하도록 `adaptNavigationContext` 훅을 구현했습니다.
+
+* **manifest.json (컨트롤러 확장 및 Outbound 선언)**:
+```json
+"sap.ui5": {
+  "extends": {
+    "extensions": {
+      "sap.ui.controllerExtensions": {
+        "sap.fe.templates.ObjectPage.ObjectPageController": {
+          "controllerName": "zsp.itsm.zspfcustmaster.ext.controller.NavContextExt"
+        },
+        "sap.fe.templates.ListReport.ListReportController": {
+          "controllerName": "zsp.itsm.zspfcustmaster.ext.controller.NavContextExt"
+        }
+      }
+    }
+  }
+}
+```
+
+* **NavContextExt.controller.js (파라미터 화이트리스트 필터링)**:
+```javascript
+sap.ui.define([
+    "sap/ui/core/mvc/ControllerExtension"
+], function (ControllerExtension) {
+    "use strict";
+
+    var mAllowedByTarget = {
+        "ZSPF_REQUEST": ["Custno"]
+    };
+
+    function restrictSelectionVariant(oSelectionVariant, aAllowed) {
+        if (!oSelectionVariant) return;
+        (oSelectionVariant.getSelectOptionsPropertyNames() || []).forEach(function (sName) {
+            if (aAllowed.indexOf(sName) === -1) {
+                oSelectionVariant.removeSelectOption(sName);
+            }
+        });
+        (oSelectionVariant.getParameterNames() || []).forEach(function (sName) {
+            if (aAllowed.indexOf(sName) === -1) {
+                oSelectionVariant.removeParameter(sName);
+            }
+        });
+    }
+
+    return ControllerExtension.extend("zsp.itsm.zspfcustmaster.ext.controller.NavContextExt", {
+        override: {
+            intentBasedNavigation: {
+                adaptNavigationContext: function (oSelectionVariant, oTargetInfo) {
+                    var sSemanticObject = oTargetInfo && oTargetInfo.semanticObject;
+                    var aAllowed = mAllowedByTarget[sSemanticObject];
+                    if (aAllowed) {
+                        restrictSelectionVariant(oSelectionVariant, aAllowed);
+                    }
+                }
+            }
+        }
+    });
+});
+```
