@@ -197,3 +197,110 @@ sap.ui.define([
     });
 });
 ```
+
+<br>
+
+#### 6) CustnoCell (커스텀 컬럼 Fragment) — 고객업체코드 및 요청내역(ZSPF_REQUEST) 바로가기
+
+고객 목록 테이블의 가독성을 높이고 특정 고객의 요청내역을 원클릭으로 바로 조회할 수 있도록, 표준 컬럼을 커스텀 XML Fragment로 확장했습니다.
+
+* **manifest.json (커스텀 컬럼 등록)**:
+  `controlConfiguration > @com.sap.vocabularies.UI.v1.LineItem > columns`에 `CustnoCell`을 선언하고 배치 위치(`anchor: "DataField::Buildate", placement: "Before"`)를 지정했습니다.
+```json
+"columns": {
+  "CustnoCell": {
+    "header": "고객업체코드",
+    "width": "18rem",
+    "horizontalAlign": "Begin",
+    "position": {
+      "anchor": "DataField::Buildate",
+      "placement": "Before"
+    },
+    "template": "zsp.itsm.zspfcustmaster.ext.fragment.CustnoCell",
+    "properties": [
+      "Custno",
+      "Custname"
+    ]
+  }
+}
+```
+
+* **CustnoCell.fragment.xml (UI 구성)**:
+  고객업체명(`Custname` 또는 `Custno`) 텍스트와 함께 `ZSPF_REQUEST`로 바로 이동하는 인라인 버튼(`요청내역`)을 배치했습니다.
+```xml
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <HBox alignItems="Center">
+        <Text
+            text="{= ${Custname} || ${Custno} }"
+            wrapping="false"
+            class="sapUiTinyMarginEnd" />
+        <Button
+            icon="sap-icon://request"
+            text="요청내역"
+            type="Transparent"
+            tooltip="고객 요청내역(ZSPF_REQUEST) 바로가기"
+            press="handler.onNavigateToRequest"
+            core:require="{ handler: 'zsp/itsm/zspfcustmaster/ext/controller/CustnoCellHandler' }" />
+    </HBox>
+</core:FragmentDefinition>
+```
+
+* **CustnoCellHandler.js (Cross-App Navigation 실행)**:
+  선택된 행의 `Custno`를 파라미터로 추출하여 `CrossApplicationNavigation` 서비스를 통해 `ZSPF_REQUEST-display`로 화면 전환을 수행합니다.
+
+<br>
+
+#### 7) NavContextExt.controller.js — GridTable 라인(행) 클릭 시 Object Page 자동 진입 네비게이션
+
+다수의 컬럼을 가로 스크롤로 조회할 수 있는 `GridTable` 고유의 데스크톱 레이아웃과 하단 가로 스크롤바를 100% 유지하면서, 우측 끝의 작은 화살표(`>`) 버튼까지 마우스를 이동할 필요 없이 **행/셀 클릭만으로 즉시 상세(Object Page)로 이동**할 수 있도록 컨트롤러 확장 이벤트를 구현했습니다.
+
+* **작동 원리 및 주요 예외 처리**:
+  - `onAfterRendering` 생명주기에서 `sap.ui.mdc.Table`의 초기화 완료(`initialized()`) 시 내부 `sap.ui.table.Table`에 `cellClick` 리스너를 바인딩합니다.
+  - **체크박스 열 제외**: 행 삭제나 다중 선택을 위해 체크박스 열(`columnIndex < 0`)을 누를 때는 상세 페이지로 이동하지 않고 순수 행 선택만 정상 동작하도록 예외 처리했습니다.
+  - **내부 액션 버튼 제외**: `[요청내역]` 버튼이나 링크(`.sapMBtn`, `.sapMLnk` 등)를 누를 때는 해당 액션만 수행되고 상세 페이지로 튕기지 않도록 이벤트 타겟 필터링을 적용했습니다.
+  - 셀 클릭 시 바인딩 컨텍스트(`rowBindingContext`)를 추출하여 Fiori Elements 표준 `routing.navigate(oContext)`를 호출합니다.
+
+```javascript
+// NavContextExt.controller.js — GridTable 행 클릭 네비게이션
+function attachGridRowNavigation(oController) {
+    var oView = oController.base.getView();
+    var oExtensionAPI = oController.base.getExtensionAPI();
+    if (!oView || !oExtensionAPI || !oExtensionAPI.routing) return;
+
+    function doAttach(oInnerTable) {
+        if (!oInnerTable || oInnerTable._bRowNavAttached) return;
+        oInnerTable._bRowNavAttached = true;
+
+        oInnerTable.attachCellClick(function (oEvent) {
+            var iColIndex = oEvent.getParameter("columnIndex");
+            if (iColIndex === undefined || iColIndex === null || iColIndex < 0) return; // 체크박스 제외
+
+            var oDomEvent = window.event;
+            var oTarget = (oDomEvent && oDomEvent.target) || null;
+            if (oTarget && (oTarget.closest("button") || oTarget.closest(".sapMBtn") || oTarget.closest(".sapMLnk"))) return;
+
+            var oContext = oEvent.getParameter("rowBindingContext");
+            if (oContext) {
+                oExtensionAPI.routing.navigate(oContext);
+            }
+        });
+    }
+
+    var aTables = oView.findAggregatedObjects(true, function (o) { return o && o.isA && o.isA("sap.ui.table.Table"); });
+    if (aTables && aTables.length) aTables.forEach(doAttach);
+
+    var aMdcTables = oView.findAggregatedObjects(true, function (o) { return o && o.isA && o.isA("sap.ui.mdc.Table"); });
+    if (aMdcTables && aMdcTables.length) {
+        aMdcTables.forEach(function (oMdc) {
+            if (oMdc.initialized) {
+                oMdc.initialized().then(function () {
+                    var oInner = oMdc.getAggregation("_content") || (typeof oMdc._getTable === "function" && oMdc._getTable());
+                    if (oInner && oInner.isA && oInner.isA("sap.ui.table.Table")) doAttach(oInner);
+                });
+            }
+        });
+    }
+}
+```

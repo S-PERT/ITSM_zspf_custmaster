@@ -22,9 +22,9 @@ builder:
           password: env:UI5_DEPLOY_PASSWORD
         app:
           name: ZSPF_CUSTMASTER
-          description: 거래처 마스터
+          description: 고객 마스터
           package: ZSP_ITSM_CUSTMASTER
-          transport: SPDK903810
+          transport: SPDK904034
         exclude:
           - /test/
           - /localService/

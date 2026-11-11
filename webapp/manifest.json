@@ -163,6 +163,22 @@
                 "@com.sap.vocabularies.UI.v1.LineItem": {
                   "tableSettings": {
                     "type": "GridTable"
+                  },
+                  "columns": {
+                    "CustnoCell": {
+                      "header": "고객업체코드",
+                      "width": "18rem",
+                      "horizontalAlign": "Begin",
+                      "position": {
+                        "anchor": "DataField::Buildate",
+                        "placement": "Before"
+                      },
+                      "template": "zsp.itsm.zspfcustmaster.ext.fragment.CustnoCell",
+                      "properties": [
+                        "Custno",
+                        "Custname"
+                      ]
+                    }
                   }
                 }
               }

@@ -16,7 +16,6 @@
             <Annotations Target="SAP__self.MainType">
                 <Annotation Term="UI.SelectionFields">
                     <Collection>
-                        <PropertyPath>Custno</PropertyPath>
                         <PropertyPath>Manager</PropertyPath>
                         <PropertyPath>_Solution/SolutionFlag</PropertyPath>
                     </Collection>

@@ -1,0 +1,18 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <HBox alignItems="Center">
+        <Text
+            text="{= ${Custname} || ${Custno} }"
+            wrapping="false"
+            class="sapUiTinyMarginEnd" />
+        <Button
+            icon="sap-icon://request"
+            text="요청내역"
+            type="Transparent"
+            tooltip="고객 요청내역(ZSPF_REQUEST) 바로가기"
+            press="handler.onNavigateToRequest"
+            core:require="{ handler: 'zsp/itsm/zspfcustmaster/ext/controller/CustnoCellHandler' }" />
+    </HBox>
+</core:FragmentDefinition>
+
