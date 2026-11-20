@@ -38,8 +38,17 @@ sap.ui.define([
             return;
         }
         var fnApply = function (oInnerTable) {
-            if (oInnerTable && oInnerTable.isA && oInnerTable.isA("sap.ui.table.Table") &&
-                oInnerTable.getRowHeight() !== iListRowHeight) {
+            if (!oInnerTable || !oInnerTable.isA || !oInnerTable.isA("sap.ui.table.Table")) {
+                return;
+            }
+            // The mdc table drives the grid table through a row mode (Auto/Fixed); with a row mode set,
+            // the deprecated table property rowHeight is ignored and rowContentHeight decides the height
+            var oRowMode = typeof oInnerTable.getRowMode === "function" && oInnerTable.getRowMode();
+            if (oRowMode && typeof oRowMode.setRowContentHeight === "function") {
+                if (oRowMode.getRowContentHeight() !== iListRowHeight) {
+                    oRowMode.setRowContentHeight(iListRowHeight);
+                }
+            } else if (oInnerTable.getRowHeight() !== iListRowHeight) {
                 oInnerTable.setRowHeight(iListRowHeight);
             }
         };
