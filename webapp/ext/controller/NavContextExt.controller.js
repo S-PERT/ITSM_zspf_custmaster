@@ -24,6 +24,39 @@ sap.ui.define([
         });
     }
 
+    // Row height (px) of the list report grid table, tall enough for the customer image avatar.
+    // GridTable rows have a fixed height (about 33px in compact density), which cut the image.
+    var iListRowHeight = 56;
+
+    function isListReport(oView) {
+        var oController = oView && oView.getController && oView.getController();
+        return !!(oController && oController.isA && oController.isA("sap.fe.templates.ListReport.ListReportController"));
+    }
+
+    function applyListRowHeight(oView) {
+        if (!isListReport(oView)) {
+            return;
+        }
+        var fnApply = function (oInnerTable) {
+            if (oInnerTable && oInnerTable.isA && oInnerTable.isA("sap.ui.table.Table") &&
+                oInnerTable.getRowHeight() !== iListRowHeight) {
+                oInnerTable.setRowHeight(iListRowHeight);
+            }
+        };
+        oView.findAggregatedObjects(true, function (o) {
+            return o && o.isA && o.isA("sap.ui.table.Table");
+        }).forEach(fnApply);
+        oView.findAggregatedObjects(true, function (o) {
+            return o && o.isA && o.isA("sap.ui.mdc.Table");
+        }).forEach(function (oMdcTable) {
+            if (oMdcTable.initialized) {
+                oMdcTable.initialized().then(function () {
+                    fnApply(oMdcTable.getAggregation("_content") || (typeof oMdcTable._getTable === "function" && oMdcTable._getTable()));
+                }).catch(function () {});
+            }
+        });
+    }
+
     function attachGridRowNavigation(oController) {
         var oView = oController.base.getView();
         var oExtensionAPI = oController.base.getExtensionAPI();
@@ -99,8 +132,10 @@ sap.ui.define([
             onAfterRendering: function () {
                 var that = this;
                 attachGridRowNavigation(that);
+                applyListRowHeight(that.base.getView());
                 setTimeout(function () {
                     attachGridRowNavigation(that);
+                    applyListRowHeight(that.base.getView());
                 }, 500);
             },
             intentBasedNavigation: {
