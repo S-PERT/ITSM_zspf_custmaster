@@ -1,0 +1,11 @@
+/* List report: center the customer image in the Attachment column.
+   FE wraps the avatar in an inline-styled flex box with "justify-content: space-between" and an empty
+   second child, which pins the avatar to the left; the avatar also carries sapUiSmallMarginEnd.
+   Overriding inline styles needs !important. Scoped to the list report column id. */
+td[data-sap-ui-colid$="::MainList--fe::table::Main::LineItem::C::Attachment-innerColumn"] .sapUiTableCellInner > div > div {
+    justify-content: center !important;
+}
+
+td[data-sap-ui-colid$="::MainList--fe::table::Main::LineItem::C::Attachment-innerColumn"] .sapFAvatar {
+    margin-right: 0 !important;
+}

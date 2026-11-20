@@ -126,7 +126,11 @@
       }
     },
     "resources": {
-      "css": []
+      "css": [
+        {
+          "uri": "css/custmaster.css"
+        }
+      ]
     },
     "routing": {
       "config": {},
