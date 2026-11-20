@@ -26,7 +26,7 @@ sap.ui.define([
 
     // Row height (px) of the list report grid table, tall enough for the customer image avatar.
     // GridTable rows have a fixed height (about 33px in compact density), which cut the image.
-    var iListRowHeight = 56;
+    var iListRowHeight = 50;
 
     function isListReport(oView) {
         var oController = oView && oView.getController && oView.getController();

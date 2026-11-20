@@ -165,6 +165,9 @@
                     "type": "GridTable"
                   },
                   "columns": {
+                    "DataField::Attachment": {
+                      "horizontalAlign": "Center"
+                    },
                     "CustnoCell": {
                       "header": "고객업체코드",
                       "width": "18rem",
