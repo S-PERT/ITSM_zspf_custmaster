@@ -174,7 +174,7 @@
                     },
                     "CustnoCell": {
                       "header": "고객업체코드",
-                      "width": "18rem",
+                      "width": "13rem",
                       "horizontalAlign": "Begin",
                       "position": {
                         "anchor": "DataField::Buildate",
