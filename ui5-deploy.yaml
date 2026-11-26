@@ -24,7 +24,7 @@ builder:
           name: ZSPF_CUSTMASTER
           description: 고객 마스터
           package: ZSP_ITSM_CUSTMASTER
-          transport: SPDK904196
+          transport: SPDK904198
         exclude:
           - /test/
           - /localService/
