@@ -129,6 +129,9 @@
       "css": [
         {
           "uri": "css/custmaster.css"
+        },
+        {
+          "uri": "css/editor.css"
         }
       ]
     },
